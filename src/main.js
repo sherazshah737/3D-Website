@@ -1,34 +1,22 @@
-import * as THREE from 'three';
-import { buildErebus } from './scene/submersible.js';
-import { buildOcean } from './scene/ocean.js';
-import { ZONES, MAX_DEPTH, depthToWorldY } from './scene/zones.js';
+import { buildFrameSequence } from './frameSequence.js';
+import { ZONES, MAX_DEPTH } from './scene/zones.js';
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
 
 // ---------------------------------------------------------------------------
-// Renderer / scene / camera
+// Frame-sequence renderer (real AI-generated descent footage)
 // ---------------------------------------------------------------------------
-const canvasHost = document.getElementById('bg-canvas');
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
-canvasHost.appendChild(renderer.domElement);
+const canvas = document.getElementById('bg-canvas');
+const frameSeq = buildFrameSequence(canvas);
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 500);
-camera.position.set(0, 6, 16);
-
-const erebus = buildErebus();
-scene.add(erebus.group);
-
-const ocean = buildOcean(scene);
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  measureSections();
+const loadingEl = document.getElementById('loading');
+frameSeq.onFirstFrameReady(() => {
+  if (loadingEl) loadingEl.classList.add('hidden');
 });
 
 // ---------------------------------------------------------------------------
@@ -53,6 +41,7 @@ function measureSections() {
 }
 measureSections();
 window.addEventListener('load', measureSections);
+window.addEventListener('resize', measureSections);
 
 function computeDepth() {
   const scrollY = window.scrollY;
@@ -65,7 +54,7 @@ function computeDepth() {
     if (scrollY < pinStart) break;
     if (scrollY <= pinEnd) {
       const t = pinEnd > pinStart ? (scrollY - pinStart) / (pinEnd - pinStart) : 1;
-      return { depth: THREE.MathUtils.lerp(s.depthStart, s.depthEnd, t), zoneIndex: i, zoneT: t };
+      return { depth: lerp(s.depthStart, s.depthEnd, t), zoneIndex: i, zoneT: t };
     }
     result = { depth: s.depthEnd, zoneIndex: i, zoneT: 1 };
   }
@@ -85,7 +74,7 @@ function updateReveals() {
     if (!s.reveal) continue;
     const pinStart = s.top;
     const pinEnd = s.top + s.height - vh;
-    const p = pinEnd > pinStart ? THREE.MathUtils.clamp((scrollY - pinStart) / (pinEnd - pinStart), 0, 1) : 0;
+    const p = pinEnd > pinStart ? clamp((scrollY - pinStart) / (pinEnd - pinStart), 0, 1) : 0;
     const visible = scrollY >= pinStart - vh * 0.5 && scrollY <= pinEnd + vh * 0.5;
     if (!visible) continue;
     const curve = fadeCurve(p);
@@ -149,45 +138,18 @@ if (manifestForm) {
 // ---------------------------------------------------------------------------
 // Animation loop
 // ---------------------------------------------------------------------------
-const clock = new THREE.Clock();
+let lastT = performance.now();
 
-function animate() {
+function animate(now) {
   requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.1);
-  const elapsed = clock.getElapsedTime();
+  const dt = Math.min((now - lastT) / 1000, 0.1);
+  lastT = now;
 
   const { depth, zoneIndex, zoneT } = computeDepth();
-  const subY = depthToWorldY(depth);
 
-  erebus.group.position.y = subY;
-  erebus.group.rotation.x = -0.08 - 0.22 * Math.min(1, depth / MAX_DEPTH);
-  erebus.update({ elapsed, zoneIndex, zoneT, depth });
-  ocean.update({ elapsed, depth, zoneIndex, zoneT, subY });
-
-  // 3/4 chase angle: orbit to the side and slightly above so the hull's
-  // profile (spine, floodlights, thrusters) actually reads instead of
-  // staring dead-on into the nose ring.
-  const overall = Math.min(1, depth / MAX_DEPTH);
-  const orbitRadius = THREE.MathUtils.lerp(15.5, 11, overall);
-  const heightOffset = THREE.MathUtils.lerp(5.5, 4, overall);
-  const baseAngle = 0.62; // ~35 degrees off dead-center
-  const orbitAngle = baseAngle + Math.sin(elapsed * 0.08) * 0.18;
-
-  const desiredCamX = erebus.group.position.x + Math.sin(orbitAngle) * orbitRadius;
-  const desiredCamY = subY + heightOffset + Math.sin(elapsed * 0.22) * 0.3;
-  const desiredCamZ = Math.cos(orbitAngle) * orbitRadius;
-
-  camera.position.x += (desiredCamX - camera.position.x) * Math.min(1, dt * 1.8);
-  camera.position.y += (desiredCamY - camera.position.y) * Math.min(1, dt * 1.8);
-  camera.position.z += (desiredCamZ - camera.position.z) * Math.min(1, dt * 1.8);
-
-  const lookY = subY - THREE.MathUtils.lerp(0.3, 3, overall);
-  const lookTarget = new THREE.Vector3(erebus.group.position.x, lookY, 1.5);
-  camera.lookAt(lookTarget);
-
-  renderer.render(scene, camera);
+  frameSeq.update({ zoneIndex, zoneT });
   updateHUD(depth, zoneIndex, dt);
   updateReveals();
 }
 
-animate();
+requestAnimationFrame(animate);
