@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABYSSAL — Descend to the Floor of the Ocean</title>
+  <meta name="description" content="ABYSSAL takes eight civilians a year to the ocean floor aboard the submersible EREBUS. 3,800 meters down. March 2027." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23010304'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%234dfcff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%234dfcff'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="bg-canvas" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="hud" id="hud" data-zone="surface">
+    <div class="hud-brand">
+      <span class="hud-brand-mark">◈</span> ABYSSAL
+    </div>
+
+    <div class="hud-depth-block">
+      <div class="hud-gauge">
+        <div class="hud-gauge-track">
+          <div class="hud-gauge-fill" id="gauge-fill"></div>
+          <div class="hud-gauge-marker" id="gauge-marker"></div>
+          <div class="hud-gauge-tick" style="top:0%"><span>0</span></div>
+          <div class="hud-gauge-tick" style="top:5.3%"><span>200</span></div>
+          <div class="hud-gauge-tick" style="top:26.3%"><span>1,000</span></div>
+          <div class="hud-gauge-tick" style="top:78.9%"><span>3,000</span></div>
+          <div class="hud-gauge-tick" style="top:100%"><span>3,800</span></div>
+        </div>
+      </div>
+      <div class="hud-readout">
+        <div class="hud-depth-value"><span id="depth-value">0</span><span class="unit">M</span></div>
+        <div class="hud-zone" id="zone-label">SURFACE</div>
+        <div class="hud-craft">EREBUS · DIVE 118</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================================================= -->
+    <!-- SURFACE / HERO                                                  -->
+    <!-- ============================================================= -->
+    <section class="zone-section" id="section-surface" data-depth-start="0" data-depth-end="40">
+      <div class="pin">
+        <div class="reveal hero-content">
+          <p class="eyebrow">ABYSSAL EXPEDITIONS · EST. 2024</p>
+          <h1>How deep<br />will you go?</h1>
+          <p class="sub">Eight civilians a year. One submersible. A four-hour descent to
+            the floor of the ocean, 3,800 meters down.</p>
+          <div class="scroll-cue">
+            <span>SCROLL TO DIVE</span>
+            <div class="scroll-cue-line"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- SUNLIT ZONE                                                     -->
+    <!-- ============================================================= -->
+    <section class="zone-section" id="section-sunlit" data-depth-start="40" data-depth-end="200">
+      <div class="pin">
+        <div class="reveal fact-card fact-card--left">
+          <span class="fact-index">01</span>
+          <span class="fact-zone">SUNLIT ZONE</span>
+          <p class="fact-text">Below 200 meters, sunlight can no longer sustain
+            photosynthesis. You are leaving the base of Earth's food chain
+            behind, on purpose.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- TWILIGHT ZONE                                                   -->
+    <!-- ============================================================= -->
+    <section class="zone-section" id="section-twilight" data-depth-start="200" data-depth-end="1000">
+      <div class="pin">
+        <div class="reveal fact-card fact-card--right">
+          <span class="fact-index">02</span>
+          <span class="fact-zone">TWILIGHT ZONE</span>
+          <p class="fact-text">Ninety percent of the ocean's biomass drifts
+            here, in near-total darkness. More life than anywhere else on
+            Earth — and almost none of it has ever seen the sun.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- MIDNIGHT ZONE                                                   -->
+    <!-- ============================================================= -->
+    <section class="zone-section" id="section-midnight" data-depth-start="1000" data-depth-end="3000">
+      <div class="pin">
+        <div class="reveal fact-card fact-card--left">
+          <span class="fact-index">03</span>
+          <span class="fact-zone">MIDNIGHT ZONE</span>
+          <p class="fact-text">No sunlight has touched this water in millions
+            of years. Every spark you see out there is a living thing making
+            its own light — the only light for miles.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- THE FLOOR                                                       -->
+    <!-- ============================================================= -->
+    <section class="zone-section" id="section-floor" data-depth-start="3000" data-depth-end="3800">
+      <div class="pin">
+        <div class="reveal fact-card fact-card--right">
+          <span class="fact-index">04</span>
+          <span class="fact-zone">THE FLOOR</span>
+          <p class="fact-text">Hydrothermal vents here scald at 400°C —
+            yet the water around them never boils. At this pressure, three
+            hundred and eighty atmospheres, it simply can't.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- EREBUS SPEC CALLOUTS                                            -->
+    <!-- ============================================================= -->
+    <section class="content-section" id="specs">
+      <div class="reveal specs-block">
+        <p class="eyebrow">THE VESSEL</p>
+        <h2>EREBUS</h2>
+        <div class="specs-grid">
+          <div class="spec"><span class="spec-value">14.2 M</span><span class="spec-label">Length</span></div>
+          <div class="spec"><span class="spec-value">8 + 2</span><span class="spec-label">Civilians · Pilots</span></div>
+          <div class="spec"><span class="spec-value">4,000 M</span><span class="spec-label">Max depth rating</span></div>
+          <div class="spec"><span class="spec-value">Ti-C</span><span class="spec-label">Composite hull</span></div>
+          <div class="spec"><span class="spec-value">~90 MIN</span><span class="spec-label">Descent time</span></div>
+          <div class="spec"><span class="spec-value">96 HRS</span><span class="spec-label">Life support reserve</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- PRICING                                                         -->
+    <!-- ============================================================= -->
+    <section class="content-section" id="pricing">
+      <div class="reveal pricing-block">
+        <p class="pricing-line">
+          <span class="pricing-em">8 seats.</span>
+          <span class="pricing-em">$250,000.</span>
+          <span class="pricing-em">Departing March 2027.</span>
+        </p>
+        <p class="pricing-note">Full expedition: training, descent, four hours
+          on the floor, ascent. Berths are allocated by application, not
+          purchase order.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- CTA / MANIFEST                                                  -->
+    <!-- ============================================================= -->
+    <section class="content-section" id="manifest">
+      <div class="reveal manifest-block">
+        <p class="eyebrow">DIVE 119 · MARCH 2027</p>
+        <h2>Join the Manifest</h2>
+        <p class="manifest-sub">Eight names. One descent. Tell us where to
+          reach you when the manifest opens.</p>
+        <form id="manifest-form" class="manifest-form">
+          <input id="manifest-email" type="email" required placeholder="you@domain.com" aria-label="Email address" />
+          <button type="submit">REQUEST BERTH</button>
+        </form>
+        <p id="manifest-status" class="manifest-status"></p>
+      </div>
+
+      <footer class="site-footer">
+        <span>ABYSSAL EXPEDITIONS</span>
+        <span>EREBUS-CLASS SUBMERSIBLE</span>
+        <span>© 2027</span>
+      </footer>
+    </section>
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
