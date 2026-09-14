@@ -164,17 +164,25 @@ function animate() {
   erebus.update({ elapsed, zoneIndex, zoneT, depth });
   ocean.update({ elapsed, depth, zoneIndex, zoneT, subY });
 
+  // 3/4 chase angle: orbit to the side and slightly above so the hull's
+  // profile (spine, floodlights, thrusters) actually reads instead of
+  // staring dead-on into the nose ring.
   const overall = Math.min(1, depth / MAX_DEPTH);
-  const backOffset = THREE.MathUtils.lerp(15, 8.5, overall);
-  const heightOffset = THREE.MathUtils.lerp(6.5, 3, overall);
-  const desiredX = erebus.group.position.x * 0.35 + Math.sin(elapsed * 0.35) * 0.5;
+  const orbitRadius = THREE.MathUtils.lerp(15.5, 11, overall);
+  const heightOffset = THREE.MathUtils.lerp(5.5, 4, overall);
+  const baseAngle = 0.62; // ~35 degrees off dead-center
+  const orbitAngle = baseAngle + Math.sin(elapsed * 0.08) * 0.18;
 
-  camera.position.x += (desiredX - camera.position.x) * Math.min(1, dt * 2.2);
-  camera.position.y += (subY + heightOffset - camera.position.y) * Math.min(1, dt * 2.2);
-  camera.position.z += (backOffset - camera.position.z) * Math.min(1, dt * 2.2);
+  const desiredCamX = erebus.group.position.x + Math.sin(orbitAngle) * orbitRadius;
+  const desiredCamY = subY + heightOffset + Math.sin(elapsed * 0.22) * 0.3;
+  const desiredCamZ = Math.cos(orbitAngle) * orbitRadius;
 
-  const lookY = subY - THREE.MathUtils.lerp(1, 11, overall);
-  const lookTarget = new THREE.Vector3(desiredX * 0.6, lookY, -8);
+  camera.position.x += (desiredCamX - camera.position.x) * Math.min(1, dt * 1.8);
+  camera.position.y += (desiredCamY - camera.position.y) * Math.min(1, dt * 1.8);
+  camera.position.z += (desiredCamZ - camera.position.z) * Math.min(1, dt * 1.8);
+
+  const lookY = subY - THREE.MathUtils.lerp(0.3, 3, overall);
+  const lookTarget = new THREE.Vector3(erebus.group.position.x, lookY, 1.5);
   camera.lookAt(lookTarget);
 
   renderer.render(scene, camera);

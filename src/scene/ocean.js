@@ -178,7 +178,7 @@ export function buildOcean(scene) {
 
   const vents = [];
   const ventPositions = [
-    [4, -10], [-6, -4], [2, 6], [-3, 12], [7, 2],
+    [3, 4], [-4, 6], [1, 9], [-2, 2], [5, 5],
   ];
   const ventMat = new THREE.MeshStandardMaterial({ color: 0x1a0800, emissive: 0xff5b1f, emissiveIntensity: 0 });
   for (const [vx, vz] of ventPositions) {
