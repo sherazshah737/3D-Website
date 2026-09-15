@@ -1,155 +1,116 @@
-import { buildFrameSequence } from './frameSequence.js';
-import { ZONES, MAX_DEPTH } from './scene/zones.js';
+// ---------------------------------------------------------------------------
+// Nav: scrolled state + mobile burger menu
+// ---------------------------------------------------------------------------
+const nav = document.getElementById('nav');
+const burger = document.getElementById('navBurger');
+const mobileMenu = document.getElementById('mobileMenu');
 
-function lerp(a, b, t) {
-  return a + (b - a) * t;
+function updateNavState() {
+  nav.classList.toggle('is-scrolled', window.scrollY > 40);
 }
+updateNavState();
+
+burger.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('is-open');
+  burger.setAttribute('aria-expanded', String(open));
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+
+mobileMenu.querySelectorAll('a').forEach((a) => {
+  a.addEventListener('click', () => {
+    mobileMenu.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Hero scroll-scrub parallax: video drifts/scales, text fades & lifts as the
+// hero is scrolled through — a lightweight, dependency-free stand-in for
+// true frame-sequence scrubbing (kept to one real clip, no frame extraction
+// tooling in this environment).
+// ---------------------------------------------------------------------------
+const heroMedia = document.getElementById('heroMedia');
+const heroContent = document.querySelector('.hero__content');
+const heroSection = document.querySelector('.hero');
+
 function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
 }
 
-// ---------------------------------------------------------------------------
-// Frame-sequence renderer (real AI-generated descent footage)
-// ---------------------------------------------------------------------------
-const canvas = document.getElementById('bg-canvas');
-const frameSeq = buildFrameSequence(canvas);
-
-const loadingEl = document.getElementById('loading');
-frameSeq.onFirstFrameReady(() => {
-  if (loadingEl) loadingEl.classList.add('hidden');
-});
-
-// ---------------------------------------------------------------------------
-// Scroll -> depth mapping
-// ---------------------------------------------------------------------------
-const zoneSectionEls = Array.from(document.querySelectorAll('.zone-section'));
-let sectionRects = [];
-
-function measureSections() {
-  sectionRects = zoneSectionEls.map((el) => {
-    const top = el.offsetTop;
-    const height = el.offsetHeight;
-    return {
-      el,
-      top,
-      height,
-      depthStart: parseFloat(el.dataset.depthStart),
-      depthEnd: parseFloat(el.dataset.depthEnd),
-      reveal: el.querySelector('.reveal'),
-    };
-  });
-}
-measureSections();
-window.addEventListener('load', measureSections);
-window.addEventListener('resize', measureSections);
-
-function computeDepth() {
-  const scrollY = window.scrollY;
-  const vh = window.innerHeight;
-  let result = { depth: 0, zoneIndex: 0, zoneT: 0 };
-  for (let i = 0; i < sectionRects.length; i++) {
-    const s = sectionRects[i];
-    const pinStart = s.top;
-    const pinEnd = s.top + s.height - vh;
-    if (scrollY < pinStart) break;
-    if (scrollY <= pinEnd) {
-      const t = pinEnd > pinStart ? (scrollY - pinStart) / (pinEnd - pinStart) : 1;
-      return { depth: lerp(s.depthStart, s.depthEnd, t), zoneIndex: i, zoneT: t };
-    }
-    result = { depth: s.depthEnd, zoneIndex: i, zoneT: 1 };
-  }
-  return result;
-}
-
-function fadeCurve(p) {
-  if (p < 0.12) return Math.max(0, p / 0.12);
-  if (p > 0.85) return Math.max(0, 1 - (p - 0.85) / 0.15);
-  return 1;
-}
-
-function updateReveals() {
-  const scrollY = window.scrollY;
-  const vh = window.innerHeight;
-  for (const s of sectionRects) {
-    if (!s.reveal) continue;
-    const pinStart = s.top;
-    const pinEnd = s.top + s.height - vh;
-    const p = pinEnd > pinStart ? clamp((scrollY - pinStart) / (pinEnd - pinStart), 0, 1) : 0;
-    const visible = scrollY >= pinStart - vh * 0.5 && scrollY <= pinEnd + vh * 0.5;
-    if (!visible) continue;
-    const curve = fadeCurve(p);
-    s.reveal.style.opacity = curve;
-    s.reveal.style.transform = `translateY(${(1 - curve) * 18}px)`;
+let ticking = false;
+function onScroll() {
+  updateNavState();
+  if (!ticking) {
+    requestAnimationFrame(applyParallax);
+    ticking = true;
   }
 }
 
-// ---------------------------------------------------------------------------
-// HUD
-// ---------------------------------------------------------------------------
-const depthValueEl = document.getElementById('depth-value');
-const zoneLabelEl = document.getElementById('zone-label');
-const gaugeFillEl = document.getElementById('gauge-fill');
-const gaugeMarkerEl = document.getElementById('gauge-marker');
-const hudRoot = document.getElementById('hud');
-let displayedDepth = 0;
+function applyParallax() {
+  ticking = false;
+  const vh = window.innerHeight;
+  const heroHeight = heroSection.offsetHeight;
+  const p = clamp(window.scrollY / heroHeight, 0, 1);
 
-function updateHUD(depth, zoneIndex, dt) {
-  displayedDepth += (depth - displayedDepth) * Math.min(1, dt * 6);
-  depthValueEl.textContent = Math.round(displayedDepth).toLocaleString();
-  const zone = ZONES[zoneIndex];
-  if (zoneLabelEl.textContent !== zone.label) zoneLabelEl.textContent = zone.label;
-  const pct = Math.min(100, (displayedDepth / MAX_DEPTH) * 100);
-  gaugeFillEl.style.height = pct + '%';
-  gaugeMarkerEl.style.top = pct + '%';
-  hudRoot.dataset.zone = zone.id;
+  const scale = 1.06 + p * 0.14;
+  const translateY = p * 90;
+  heroMedia.style.transform = `translateY(${translateY}px) scale(${scale})`;
+
+  const contentP = clamp(window.scrollY / (vh * 0.7), 0, 1);
+  heroContent.style.opacity = String(1 - contentP);
+  heroContent.style.transform = `translateY(${contentP * -60}px)`;
 }
 
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', applyParallax);
+applyParallax();
+
 // ---------------------------------------------------------------------------
-// Reveal-on-scroll for the non-depth sections (specs / pricing / manifest)
+// Reveal-on-scroll
 // ---------------------------------------------------------------------------
-const staticReveal = document.querySelectorAll('.content-section .reveal');
+const revealEls = document.querySelectorAll('.reveal, .reveal-up');
 const io = new IntersectionObserver(
   (entries) => {
     for (const entry of entries) {
-      if (entry.isIntersecting) entry.target.classList.add('in-view');
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
     }
   },
-  { threshold: 0.2 }
+  { threshold: 0.18, rootMargin: '0px 0px -8% 0px' }
 );
-staticReveal.forEach((el) => io.observe(el));
+revealEls.forEach((el) => io.observe(el));
 
 // ---------------------------------------------------------------------------
-// Manifest form (front-end only)
+// Reservation form
 // ---------------------------------------------------------------------------
-const manifestForm = document.getElementById('manifest-form');
-if (manifestForm) {
-  manifestForm.addEventListener('submit', (e) => {
+const form = document.getElementById('reserveForm');
+const status = document.getElementById('formStatus');
+const dateInput = document.getElementById('resDate');
+
+if (dateInput) {
+  const today = new Date();
+  dateInput.min = today.toISOString().split('T')[0];
+}
+
+if (form) {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const status = document.getElementById('manifest-status');
-    const email = document.getElementById('manifest-email').value;
-    if (status && email) {
-      status.textContent = `LOGGED — ${email} ADDED TO THE 2027 MANIFEST QUEUE.`;
-      status.classList.add('active');
-      manifestForm.reset();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
     }
+    const data = Object.fromEntries(new FormData(form).entries());
+    status.textContent = `Thank you, ${data.name.split(' ')[0]} — table for ${data.party} requested on ${data.date} at ${data.time}. We'll confirm by phone shortly.`;
+    form.reset();
+    dateInput.min = new Date().toISOString().split('T')[0];
   });
 }
 
 // ---------------------------------------------------------------------------
-// Animation loop
+// Footer year
 // ---------------------------------------------------------------------------
-let lastT = performance.now();
-
-function animate(now) {
-  requestAnimationFrame(animate);
-  const dt = Math.min((now - lastT) / 1000, 0.1);
-  lastT = now;
-
-  const { depth, zoneIndex, zoneT } = computeDepth();
-
-  frameSeq.update({ zoneIndex, zoneT });
-  updateHUD(depth, zoneIndex, dt);
-  updateReveals();
-}
-
-requestAnimationFrame(animate);
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = String(new Date().getFullYear());

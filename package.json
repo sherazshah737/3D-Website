@@ -1,8 +1,8 @@
 {
-  "name": "abyssal",
+  "name": "historia-meze-grill",
   "private": true,
   "version": "1.0.0",
-  "description": "ABYSSAL — cinematic scroll-driven descent to the ocean floor aboard the EREBUS",
+  "description": "HISTORIA MEZE GRILL — a cinematic, scroll-driven website for a Mediterranean charcoal grill in High Wycombe, UK",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -3,178 +3,202 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ABYSSAL — Descend to the Floor of the Ocean</title>
-  <meta name="description" content="ABYSSAL takes eight civilians a year to the ocean floor aboard the submersible EREBUS. 3,800 meters down. March 2027." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23010304'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%234dfcff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%234dfcff'/%3E%3C/svg%3E" />
+  <title>HISTORIA MEZE GRILL — High Wycombe</title>
+  <meta name="description" content="Historia Meze Grill — charcoal fire, mezze, and slow-built recipes in High Wycombe. Reserve a table." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  <div class="vignette" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
-  <div id="loading" aria-hidden="true"><span>INITIALIZING DESCENT</span></div>
+  <div class="grain"></div>
 
-  <header class="hud" id="hud" data-zone="surface">
-    <div class="hud-brand">
-      <span class="hud-brand-mark">◈</span> ABYSSAL
-    </div>
-
-    <div class="hud-depth-block">
-      <div class="hud-gauge">
-        <div class="hud-gauge-track">
-          <div class="hud-gauge-fill" id="gauge-fill"></div>
-          <div class="hud-gauge-marker" id="gauge-marker"></div>
-          <div class="hud-gauge-tick" style="top:0%"><span>0</span></div>
-          <div class="hud-gauge-tick" style="top:5.3%"><span>200</span></div>
-          <div class="hud-gauge-tick" style="top:26.3%"><span>1,000</span></div>
-          <div class="hud-gauge-tick" style="top:78.9%"><span>3,000</span></div>
-          <div class="hud-gauge-tick" style="top:100%"><span>3,800</span></div>
-        </div>
-      </div>
-      <div class="hud-readout">
-        <div class="hud-depth-value"><span id="depth-value">0</span><span class="unit">M</span></div>
-        <div class="hud-zone" id="zone-label">SURFACE</div>
-        <div class="hud-craft">EREBUS · DIVE 118</div>
-      </div>
-    </div>
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__mark">HISTORIA</a>
+    <nav class="nav__links">
+      <a href="#story">Story</a>
+      <a href="#menu">Menu</a>
+      <a href="#private-dining">Private Dining</a>
+      <a href="#reserve">Hours</a>
+    </nav>
+    <a href="#reserve" class="btn btn--ghost nav__cta">Reserve</a>
+    <button class="nav__burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
-  <main>
-    <!-- ============================================================= -->
-    <!-- SURFACE / HERO                                                  -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-surface" data-depth-start="0" data-depth-end="40">
-      <div class="pin">
-        <div class="reveal hero-content">
-          <p class="eyebrow">ABYSSAL EXPEDITIONS · EST. 2024</p>
-          <h1>How deep<br />will you go?</h1>
-          <p class="sub">Eight civilians a year. One submersible. A four-hour descent to
-            the floor of the ocean, 3,800 meters down.</p>
-          <div class="scroll-cue">
-            <span>SCROLL TO DIVE</span>
-            <div class="scroll-cue-line"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#story">Story</a>
+    <a href="#menu">Menu</a>
+    <a href="#private-dining">Private Dining</a>
+    <a href="#reserve">Hours</a>
+    <a href="#reserve" class="btn btn--solid">Reserve a Table</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero__media" id="heroMedia">
+      <video class="hero__video" autoplay muted loop playsinline preload="auto">
+        <source src="/video/historia-promo.mp4" type="video/mp4" />
+      </video>
+      <div class="hero__scrim"></div>
+    </div>
+    <div class="hero__content">
+      <p class="eyebrow reveal-up">High Wycombe · Est. Charcoal &amp; Time</p>
+      <h1 class="hero__title">
+        <span class="reveal-up" style="--d:0">HISTORIA</span>
+        <span class="reveal-up hero__title--accent" style="--d:1">MEZE&nbsp;GRILL</span>
+      </h1>
+      <p class="hero__tag reveal-up" style="--d:2">Fire. Smoke. History.</p>
+      <a href="#reserve" class="btn btn--solid reveal-up" style="--d:3">Reserve a Table</a>
+    </div>
+    <div class="hero__scrollcue" aria-hidden="true"><span></span></div>
+  </section>
+
+  <!-- STORY -->
+  <section class="story" id="story">
+    <div class="story__inner">
+      <p class="section-eyebrow reveal">Our Story</p>
+      <h2 class="reveal">Every plate carries a history.</h2>
+      <p class="story__lede reveal">Small plates. One flame.</p>
+      <p class="story__body reveal">
+        Charcoal-grilled. Slow-built. Passed down. Historia gathers the meze
+        and grill traditions of the Eastern Mediterranean over a single
+        live fire — no shortcuts, no gas, no rush.
+      </p>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="menu" id="menu">
+    <div class="menu__head reveal">
+      <p class="section-eyebrow">The Menu</p>
+      <h2>Meze &amp; Grill</h2>
+    </div>
+    <div class="menu__columns">
+      <div class="menu__col reveal">
+        <h3 class="menu__col-title">Meze</h3>
+        <ul class="menu__list">
+          <li><span class="dish">Smoked Aubergine <em>tahini, pomegranate</em></span><span class="price">£7</span></li>
+          <li><span class="dish">Whipped Feta <em>chilli honey, flatbread</em></span><span class="price">£6</span></li>
+          <li><span class="dish">Charred Octopus <em>lemon, oregano</em></span><span class="price">£11</span></li>
+          <li><span class="dish">Lamb Köfte <em>yoghurt, sumac</em></span><span class="price">£8</span></li>
+          <li><span class="dish">Halloumi <em>wild honey, thyme</em></span><span class="price">£7</span></li>
+          <li><span class="dish">Hummus <em>burnt butter, pine nuts</em></span><span class="price">£6</span></li>
+        </ul>
+      </div>
+      <div class="menu__col reveal">
+        <h3 class="menu__col-title">Grill</h3>
+        <ul class="menu__list">
+          <li><span class="dish">Whole Seabream <em>charcoal, lemon</em></span><span class="price">£24</span></li>
+          <li><span class="dish">Lamb Chops <em>za'atar, garlic</em></span><span class="price">£26</span></li>
+          <li><span class="dish">Mixed Grill <em>historia style</em></span><span class="price">£29</span></li>
+          <li><span class="dish">Chicken Shish <em>sumac onions</em></span><span class="price">£19</span></li>
+          <li><span class="dish">Beef Adana <em>smoked chilli</em></span><span class="price">£21</span></li>
+          <li><span class="dish">Grilled Vegetables <em>pomegranate molasses</em></span><span class="price">£16</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="menu__note reveal">A tasting selection is available for the table, on request.</p>
+  </section>
+
+  <!-- PRIVATE DINING -->
+  <section class="private" id="private-dining">
+    <div class="private__media">
+      <video class="private__video" autoplay muted loop playsinline preload="none">
+        <source src="/video/historia-promo.mp4" type="video/mp4" />
+      </video>
+      <div class="private__scrim"></div>
+    </div>
+    <div class="private__content reveal">
+      <p class="section-eyebrow">Private Dining</p>
+      <h2>A table of your own. Same fire.</h2>
+      <p class="private__body">
+        A private room for up to eighteen. Fixed menus built around the
+        grill, or let us build one around you.
+      </p>
+      <a href="mailto:events@historiamezegrill.co.uk" class="btn btn--ghost btn--light">Enquire</a>
+    </div>
+  </section>
+
+  <!-- HOURS + MAP + RESERVE -->
+  <section class="reserve" id="reserve">
+    <div class="reserve__grid">
+      <div class="reserve__info reveal">
+        <p class="section-eyebrow">Visit</p>
+        <h2>Hours &amp; Location</h2>
+        <dl class="hours">
+          <div><dt>Mon</dt><dd>Closed</dd></div>
+          <div><dt>Tue – Thu</dt><dd>12:00 – 22:00</dd></div>
+          <div><dt>Fri – Sat</dt><dd>12:00 – 23:00</dd></div>
+          <div><dt>Sun</dt><dd>12:00 – 21:00</dd></div>
+        </dl>
+        <address class="address">
+          14 Frogmoor<br />
+          High Wycombe, Buckinghamshire HP11 2QT<br />
+          <a href="tel:+441494000000">01494 000 000</a>
+        </address>
+        <div class="map">
+          <iframe
+            title="Historia Meze Grill on the map"
+            src="https://maps.google.com/maps?q=Frogmoor%2C%20High%20Wycombe%2C%20HP11%202QT&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+
+      <form class="reserve__form reveal" id="reserveForm" novalidate>
+        <p class="section-eyebrow">Reserve</p>
+        <h2>Reserve a Table</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="resDate">Date</label>
+            <input type="date" id="resDate" name="date" required />
+          </div>
+          <div class="field">
+            <label for="resTime">Time</label>
+            <input type="time" id="resTime" name="time" value="19:00" required />
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================= -->
-    <!-- SUNLIT ZONE                                                     -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-sunlit" data-depth-start="40" data-depth-end="200">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--left">
-          <span class="fact-index">01</span>
-          <span class="fact-zone">SUNLIT ZONE</span>
-          <p class="fact-text">Below 200 meters, sunlight can no longer sustain
-            photosynthesis. You are leaving the base of Earth's food chain
-            behind, on purpose.</p>
+        <div class="field-row">
+          <div class="field">
+            <label for="resParty">Party size</label>
+            <select id="resParty" name="party" required>
+              <option value="">Guests</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7</option><option>8+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="resPhone">Phone</label>
+            <input type="tel" id="resPhone" name="phone" placeholder="07…" required />
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================= -->
-    <!-- TWILIGHT ZONE                                                   -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-twilight" data-depth-start="200" data-depth-end="1000">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--right">
-          <span class="fact-index">02</span>
-          <span class="fact-zone">TWILIGHT ZONE</span>
-          <p class="fact-text">Ninety percent of the ocean's biomass drifts
-            here, in near-total darkness. More life than anywhere else on
-            Earth — and almost none of it has ever seen the sun.</p>
+        <div class="field">
+          <label for="resName">Name</label>
+          <input type="text" id="resName" name="name" placeholder="Full name" required />
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================= -->
-    <!-- MIDNIGHT ZONE                                                   -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-midnight" data-depth-start="1000" data-depth-end="3000">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--left">
-          <span class="fact-index">03</span>
-          <span class="fact-zone">MIDNIGHT ZONE</span>
-          <p class="fact-text">No sunlight has touched this water in millions
-            of years. Every spark you see out there is a living thing making
-            its own light — the only light for miles.</p>
+        <div class="field">
+          <label for="resNotes">Notes <span>(optional)</span></label>
+          <textarea id="resNotes" name="notes" rows="2" placeholder="Allergies, occasions, seating…"></textarea>
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================= -->
-    <!-- THE FLOOR                                                       -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-floor" data-depth-start="3000" data-depth-end="3800">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--right">
-          <span class="fact-index">04</span>
-          <span class="fact-zone">THE FLOOR</span>
-          <p class="fact-text">Hydrothermal vents here scald at 400°C —
-            yet the water around them never boils. At this pressure, three
-            hundred and eighty atmospheres, it simply can't.</p>
-        </div>
-      </div>
-    </section>
+        <button type="submit" class="btn btn--solid btn--full">Reserve a Table</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
 
-    <!-- ============================================================= -->
-    <!-- EREBUS SPEC CALLOUTS                                            -->
-    <!-- ============================================================= -->
-    <section class="content-section" id="specs">
-      <div class="reveal specs-block">
-        <p class="eyebrow">THE VESSEL</p>
-        <h2>EREBUS</h2>
-        <div class="specs-grid">
-          <div class="spec"><span class="spec-value">14.2 M</span><span class="spec-label">Length</span></div>
-          <div class="spec"><span class="spec-value">8 + 2</span><span class="spec-label">Civilians · Pilots</span></div>
-          <div class="spec"><span class="spec-value">4,000 M</span><span class="spec-label">Max depth rating</span></div>
-          <div class="spec"><span class="spec-value">Ti-C</span><span class="spec-label">Composite hull</span></div>
-          <div class="spec"><span class="spec-value">~90 MIN</span><span class="spec-label">Descent time</span></div>
-          <div class="spec"><span class="spec-value">96 HRS</span><span class="spec-label">Life support reserve</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- PRICING                                                         -->
-    <!-- ============================================================= -->
-    <section class="content-section" id="pricing">
-      <div class="reveal pricing-block">
-        <p class="pricing-line">
-          <span class="pricing-em">8 seats.</span>
-          <span class="pricing-em">$250,000.</span>
-          <span class="pricing-em">Departing March 2027.</span>
-        </p>
-        <p class="pricing-note">Full expedition: training, descent, four hours
-          on the floor, ascent. Berths are allocated by application, not
-          purchase order.</p>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- CTA / MANIFEST                                                  -->
-    <!-- ============================================================= -->
-    <section class="content-section" id="manifest">
-      <div class="reveal manifest-block">
-        <p class="eyebrow">DIVE 119 · MARCH 2027</p>
-        <h2>Join the Manifest</h2>
-        <p class="manifest-sub">Eight names. One descent. Tell us where to
-          reach you when the manifest opens.</p>
-        <form id="manifest-form" class="manifest-form">
-          <input id="manifest-email" type="email" required placeholder="you@domain.com" aria-label="Email address" />
-          <button type="submit">REQUEST BERTH</button>
-        </form>
-        <p id="manifest-status" class="manifest-status"></p>
-      </div>
-
-      <footer class="site-footer">
-        <span>ABYSSAL EXPEDITIONS</span>
-        <span>EREBUS-CLASS SUBMERSIBLE</span>
-        <span>© 2027</span>
-      </footer>
-    </section>
-  </main>
+  <footer class="footer">
+    <div class="footer__mark">HISTORIA MEZE GRILL</div>
+    <p>14 Frogmoor, High Wycombe, Buckinghamshire HP11 2QT · 01494 000 000</p>
+    <p class="footer__meta">© <span id="year"></span> Historia Meze Grill. All rights reserved.</p>
+  </footer>
 
   <script type="module" src="/src/main.js"></script>
 </body>
