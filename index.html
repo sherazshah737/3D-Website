@@ -35,24 +35,27 @@
     <a href="#reserve" class="btn btn--solid">Reserve a Table</a>
   </div>
 
-  <!-- HERO -->
+  <!-- HERO — tall scroll track; the inner stage stays pinned while the
+       promo clip scrubs frame-by-frame against scroll position -->
   <section class="hero" id="top">
-    <div class="hero__media" id="heroMedia">
-      <video class="hero__video" autoplay muted loop playsinline preload="auto">
-        <source src="/video/historia-promo.mp4" type="video/mp4" />
-      </video>
-      <div class="hero__scrim"></div>
+    <div class="hero__stage">
+      <div class="hero__media" id="heroMedia">
+        <video class="hero__video" id="heroVideo" muted playsinline preload="auto">
+          <source src="/video/historia-promo.mp4" type="video/mp4" />
+        </video>
+        <div class="hero__scrim"></div>
+      </div>
+      <div class="hero__content" id="heroContent">
+        <p class="eyebrow reveal-up">High Wycombe · Est. Charcoal &amp; Time</p>
+        <h1 class="hero__title">
+          <span class="reveal-up" style="--d:0">HISTORIA</span>
+          <span class="reveal-up hero__title--accent" style="--d:1">MEZE&nbsp;GRILL</span>
+        </h1>
+        <p class="hero__tag reveal-up" style="--d:2">Fire. Smoke. History.</p>
+        <a href="#reserve" class="btn btn--solid reveal-up" style="--d:3">Reserve a Table</a>
+      </div>
+      <div class="hero__scrollcue" id="heroScrollcue" aria-hidden="true"><span></span></div>
     </div>
-    <div class="hero__content">
-      <p class="eyebrow reveal-up">High Wycombe · Est. Charcoal &amp; Time</p>
-      <h1 class="hero__title">
-        <span class="reveal-up" style="--d:0">HISTORIA</span>
-        <span class="reveal-up hero__title--accent" style="--d:1">MEZE&nbsp;GRILL</span>
-      </h1>
-      <p class="hero__tag reveal-up" style="--d:2">Fire. Smoke. History.</p>
-      <a href="#reserve" class="btn btn--solid reveal-up" style="--d:3">Reserve a Table</a>
-    </div>
-    <div class="hero__scrollcue" aria-hidden="true"><span></span></div>
   </section>
 
   <!-- STORY -->

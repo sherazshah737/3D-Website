@@ -25,46 +25,69 @@ mobileMenu.querySelectorAll('a').forEach((a) => {
 });
 
 // ---------------------------------------------------------------------------
-// Hero scroll-scrub parallax: video drifts/scales, text fades & lifts as the
-// hero is scrolled through — a lightweight, dependency-free stand-in for
-// true frame-sequence scrubbing (kept to one real clip, no frame extraction
-// tooling in this environment).
+// Hero scroll-scrub: the hero is a tall (340vh) scroll track with a sticky
+// inner stage. As the user scrolls through that track, the promo video's
+// currentTime is driven directly by scroll progress — true frame-accurate
+// scrubbing, not just autoplay behind a parallax layer. The opening ~9s of
+// the clip is used as the "scrub window" (Seedance-clip-length feel); the
+// title fades in, holds, then fades out as the scrub completes and the
+// page moves on to the Story section.
 // ---------------------------------------------------------------------------
-const heroMedia = document.getElementById('heroMedia');
-const heroContent = document.querySelector('.hero__content');
 const heroSection = document.querySelector('.hero');
+const heroVideo = document.getElementById('heroVideo');
+const heroContent = document.getElementById('heroContent');
+const heroScrollcue = document.getElementById('heroScrollcue');
 
 function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
+}
+
+const SCRUB_WINDOW_SECONDS = 9;
+let scrubDuration = SCRUB_WINDOW_SECONDS;
+let videoReady = false;
+
+heroVideo.addEventListener('loadedmetadata', () => {
+  scrubDuration = Math.min(SCRUB_WINDOW_SECONDS, heroVideo.duration || SCRUB_WINDOW_SECONDS);
+  videoReady = true;
+  applyHeroScrub();
+});
+
+function heroProgress() {
+  const rect = heroSection.getBoundingClientRect();
+  const scrollable = heroSection.offsetHeight - window.innerHeight;
+  if (scrollable <= 0) return 0;
+  return clamp(-rect.top / scrollable, 0, 1);
 }
 
 let ticking = false;
 function onScroll() {
   updateNavState();
   if (!ticking) {
-    requestAnimationFrame(applyParallax);
+    requestAnimationFrame(applyHeroScrub);
     ticking = true;
   }
 }
 
-function applyParallax() {
+function applyHeroScrub() {
   ticking = false;
-  const vh = window.innerHeight;
-  const heroHeight = heroSection.offsetHeight;
-  const p = clamp(window.scrollY / heroHeight, 0, 1);
+  const p = heroProgress();
 
-  const scale = 1.06 + p * 0.14;
-  const translateY = p * 90;
-  heroMedia.style.transform = `translateY(${translateY}px) scale(${scale})`;
+  if (videoReady) {
+    heroVideo.currentTime = p * scrubDuration;
+  }
 
-  const contentP = clamp(window.scrollY / (vh * 0.7), 0, 1);
-  heroContent.style.opacity = String(1 - contentP);
-  heroContent.style.transform = `translateY(${contentP * -60}px)`;
+  // title/tagline/CTA track in on load (handled by .reveal-up), then fade
+  // away as soon as scrolling starts so the scrubbing video carries the rest
+  const contentOpacity = 1 - clamp(p / 0.15, 0, 1);
+  heroContent.style.opacity = String(contentOpacity);
+  heroContent.style.transform = `translateY(${-p * 120}px)`;
+
+  heroScrollcue.style.opacity = String(1 - clamp(p / 0.1, 0, 1));
 }
 
 window.addEventListener('scroll', onScroll, { passive: true });
-window.addEventListener('resize', applyParallax);
-applyParallax();
+window.addEventListener('resize', applyHeroScrub);
+applyHeroScrub();
 
 // ---------------------------------------------------------------------------
 // Reveal-on-scroll
