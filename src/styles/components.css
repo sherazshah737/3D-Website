@@ -1,0 +1,387 @@
+/* ==========================================================================
+   Global layers
+   ========================================================================== */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* warm at the top of the page, steel at the bottom */
+  background:
+    radial-gradient(120% 70% at 85% 0%, rgba(255, 107, 44, calc(0.1 * var(--page-heat))) 0%, transparent 60%),
+    radial-gradient(90% 80% at 10% 110%, rgba(27, 42, 58, calc(0.9 - 0.6 * var(--page-heat))) 0%, transparent 70%);
+}
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+main,
+.footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* One fixed canvas renders every DOM-synced 3D view (services + gallery) */
+.views-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Cursor
+   ========================================================================== */
+.cursor {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+  html.has-cursor input[type='text'],
+  html.has-cursor input[type='email'],
+  html.has-cursor textarea {
+    cursor: text !important;
+  }
+  html.has-cursor .cursor {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 150;
+    pointer-events: none;
+    --near: 0;
+  }
+  .cursor__dot,
+  .cursor__glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    will-change: transform;
+  }
+  .cursor__dot {
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    background: color-mix(in srgb, var(--gold) calc(var(--near) * 100%), var(--silver));
+    box-shadow: 0 0 calc(var(--near) * 14px) rgba(242, 169, 59, 0.9);
+  }
+  .cursor__glow {
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0 -60px;
+    background: radial-gradient(circle, rgba(242, 169, 59, 0.45) 0%, rgba(255, 107, 44, 0.12) 40%, transparent 70%);
+    opacity: calc(0.05 + var(--near) * 0.95);
+    mix-blend-mode: screen;
+  }
+  .cursor.is-hidden {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Thermometer rail
+   ========================================================================== */
+.thermo {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  z-index: 60;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--silver-dim);
+}
+@media (min-width: 1100px) {
+  .thermo {
+    display: flex;
+  }
+}
+.thermo__track {
+  position: relative;
+  width: 1px;
+  height: 28vh;
+  background: var(--steel-line);
+}
+.thermo__fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 0;
+  transform: scaleY(var(--progress, 0));
+  background: linear-gradient(var(--steel), color-mix(in srgb, var(--gold) calc(var(--page-heat) * 100%), var(--steel)));
+}
+.thermo__fill::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gold) calc(var(--page-heat) * 100%), #5d7188);
+  box-shadow: 0 0 calc(var(--page-heat) * 12px) var(--gold);
+}
+.thermo__value {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   Nav
+   ========================================================================== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px var(--gutter);
+  transition: transform 0.5s var(--ease-out), background-color 0.4s;
+}
+.nav.is-scrolled {
+  background: rgba(10, 12, 16, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.nav.is-hidden {
+  transform: translateY(-110%);
+}
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  min-height: 44px;
+}
+.nav__mark {
+  width: 26px;
+  height: 26px;
+}
+.nav__mark circle {
+  fill: var(--gold);
+}
+.nav__mark path {
+  fill: none;
+  stroke: var(--silver);
+  stroke-width: 2;
+}
+.nav__links {
+  display: none;
+  gap: clamp(20px, 3vw, 44px);
+  font-size: 0.9375rem;
+}
+@media (min-width: 860px) {
+  .nav__links {
+    display: flex;
+  }
+}
+.nav__links a {
+  position: relative;
+  display: inline-block;
+  padding: 10px 0;
+  color: var(--silver-dim);
+  transition: color 0.3s;
+}
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 0.4s var(--ease-out);
+}
+.nav__links a:hover,
+.nav__links a:focus-visible {
+  color: var(--silver);
+}
+.nav__links a:hover::after,
+.nav__links a:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+/* ==========================================================================
+   Buttons & links
+   ========================================================================== */
+.btn {
+  --mx: 0px;
+  --my: 0px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 30px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--black);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  isolation: isolate;
+  transition: box-shadow 0.4s var(--ease-out);
+}
+.btn::before {
+  /* molten sheen that sweeps on hover */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120px circle at var(--hx, 50%) var(--hy, 50%), var(--white-hot), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.btn:hover::before,
+.btn:focus-visible::before {
+  opacity: 0.7;
+}
+.btn:hover,
+.btn:focus-visible {
+  box-shadow: 0 0 0 1px var(--gold), 0 10px 40px -8px rgba(242, 169, 59, 0.55);
+}
+.btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.4s var(--ease-out);
+}
+.btn:hover svg {
+  transform: translateX(3px);
+}
+.btn--small {
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: 0.875rem;
+  background: transparent;
+  color: var(--silver);
+  box-shadow: inset 0 0 0 1px var(--steel-line);
+}
+.btn--small:hover,
+.btn--small:focus-visible {
+  color: var(--black);
+  background: var(--gold);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--silver);
+  box-shadow: inset 0 0 0 1px rgba(201, 209, 219, 0.3);
+}
+.btn--ghost::before {
+  background: radial-gradient(140px circle at var(--hx, 50%) var(--hy, 50%), rgba(242, 169, 59, 0.35), transparent 70%);
+}
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+[data-magnetic] > * {
+  pointer-events: none;
+}
+
+.link-arrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 10px;
+  color: var(--silver);
+  font-weight: 500;
+}
+.link-arrow::after {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.4s var(--ease-out), background-color 0.3s;
+}
+.link-arrow:hover::after,
+.link-arrow:focus-visible::after {
+  width: 48px;
+  background: var(--gold);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(201, 209, 219, 0.3);
+  transition: box-shadow 0.3s, color 0.3s;
+}
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--silver-dim);
+  box-shadow: inset 0 0 0 1px var(--steel-line);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--silver-dim);
+}
+.eyebrow__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 12px var(--gold), 0 0 28px var(--ember);
+}
