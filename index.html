@@ -1,181 +1,516 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ABYSSAL — Descend to the Floor of the Ocean</title>
-  <meta name="description" content="ABYSSAL takes eight civilians a year to the ocean floor aboard the submersible EREBUS. 3,800 meters down. March 2027." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23010304'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%234dfcff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%234dfcff'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="/src/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>DevForc — Ideas go in. Software comes out.</title>
+  <meta name="description" content="DevForc designs and builds web apps, mobile apps, MVPs and custom software for startups and businesses that need to ship. Fixed-scope pricing, weekly demos, full code ownership." />
+  <link rel="canonical" href="https://devforc.com/" />
+  <meta name="theme-color" content="#0A0C10" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DevForc" />
+  <meta property="og:url" content="https://devforc.com/" />
+  <meta property="og:title" content="DevForc — Ideas go in. Software comes out." />
+  <meta property="og:description" content="Web apps, mobile apps, MVPs and custom software for teams that need to ship." />
+  <meta property="og:image" content="https://devforc.com/images/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="DevForc — Ideas go in. Software comes out." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DevForc — Ideas go in. Software comes out." />
+  <meta name="twitter:description" content="Web apps, mobile apps, MVPs and custom software for teams that need to ship." />
+  <meta name="twitter:image" content="https://devforc.com/images/og-image.jpg" />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Fonts: loaded without blocking first paint; metric-matched fallbacks are in base.css -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" />
+  </noscript>
+
+  <script>
+    // Runs before paint: flags JS + motion preference so CSS can pick the right initial state.
+    (function (d) {
+      var c = d.documentElement.classList;
+      c.remove('no-js'); c.add('js');
+      var mm = function (q) { return window.matchMedia(q).matches; };
+      if (mm('(prefers-reduced-motion: reduce)')) c.add('reduced-motion');
+      else {
+        c.add('forge-pinned');
+        if (mm('(min-width: 769px)')) c.add('work-pinned');
+      }
+    })(document);
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "DevForc",
+    "url": "https://devforc.com/",
+    "logo": "https://devforc.com/icon-512.png",
+    "image": "https://devforc.com/images/og-image.jpg",
+    "description": "DevForc is a software development agency that designs and builds web apps, mobile apps, MVPs and custom software for startups and businesses.",
+    "email": "hello@devforc.com",
+    "slogan": "Ideas go in. Software comes out.",
+    "knowsAbout": ["Web development", "Mobile app development", "MVP development", "Custom software development"],
+    "contactPoint": [{
+      "@type": "ContactPoint",
+      "contactType": "sales",
+      "email": "hello@devforc.com",
+      "availableLanguage": ["English"]
+    }],
+    "sameAs": [
+      "https://www.linkedin.com/company/devforc",
+      "https://github.com/devforc"
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/src/styles/main.css" />
 </head>
 <body>
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  <div class="vignette" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Decorative global layers -->
+  <div class="ambient" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
-  <div id="loading" aria-hidden="true"><span>INITIALIZING DESCENT</span></div>
+  <canvas class="views-canvas" id="views-canvas" aria-hidden="true"></canvas>
+  <div class="cursor" aria-hidden="true"><span class="cursor__glow"></span><span class="cursor__dot"></span></div>
 
-  <header class="hud" id="hud" data-zone="surface">
-    <div class="hud-brand">
-      <span class="hud-brand-mark">◈</span> ABYSSAL
-    </div>
+  <!-- Page temperature: 1,538 °C (iron melts) at the top, room temperature at the end -->
+  <div class="thermo" aria-hidden="true">
+    <span class="thermo__track"><span class="thermo__fill"></span></span>
+    <span class="thermo__value"><span data-thermo>1538</span>°C</span>
+  </div>
 
-    <div class="hud-depth-block">
-      <div class="hud-gauge">
-        <div class="hud-gauge-track">
-          <div class="hud-gauge-fill" id="gauge-fill"></div>
-          <div class="hud-gauge-marker" id="gauge-marker"></div>
-          <div class="hud-gauge-tick" style="top:0%"><span>0</span></div>
-          <div class="hud-gauge-tick" style="top:5.3%"><span>200</span></div>
-          <div class="hud-gauge-tick" style="top:26.3%"><span>1,000</span></div>
-          <div class="hud-gauge-tick" style="top:78.9%"><span>3,000</span></div>
-          <div class="hud-gauge-tick" style="top:100%"><span>3,800</span></div>
-        </div>
-      </div>
-      <div class="hud-readout">
-        <div class="hud-depth-value"><span id="depth-value">0</span><span class="unit">M</span></div>
-        <div class="hud-zone" id="zone-label">SURFACE</div>
-        <div class="hud-craft">EREBUS · DIVE 118</div>
-      </div>
-    </div>
+  <header class="nav" id="top">
+    <a class="nav__brand" href="#top" aria-label="DevForc — back to top">
+      <svg class="nav__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle cx="16" cy="17" r="7" />
+        <path d="M4 27h24" />
+      </svg>
+      <span>DevForc</span>
+    </a>
+    <nav aria-label="Primary">
+      <ul class="nav__links">
+        <li><a href="#process">Process</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#why">Why us</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn--small" href="#contact" data-magnetic><span>Start a project</span></a>
   </header>
 
-  <main>
-    <!-- ============================================================= -->
-    <!-- SURFACE / HERO                                                  -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-surface" data-depth-start="0" data-depth-end="40">
-      <div class="pin">
-        <div class="reveal hero-content">
-          <p class="eyebrow">ABYSSAL EXPEDITIONS · EST. 2024</p>
-          <h1>How deep<br />will you go?</h1>
-          <p class="sub">Eight civilians a year. One submersible. A four-hour descent to
-            the floor of the ocean, 3,800 meters down.</p>
-          <div class="scroll-cue">
-            <span>SCROLL TO DIVE</span>
-            <div class="scroll-cue-line"></div>
+  <main id="main">
+    <!-- ============================================================ -->
+    <!-- 01 · HERO — the ember                                          -->
+    <!-- ============================================================ -->
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <div class="hero__stage" aria-hidden="true">
+        <picture class="hero__poster">
+          <source media="(max-width: 700px)" srcset="/images/hero-poster-mobile.webp" />
+          <img src="/images/hero-poster.webp" alt="" width="1920" height="1080" fetchpriority="low" decoding="async" />
+        </picture>
+        <!-- video element is created by JS only on low-power devices (see src/js/hero-fallback.js) -->
+        <canvas class="hero__canvas" id="hero-canvas"></canvas>
+        <span class="hero__spark"></span>
+      </div>
+
+      <div class="hero__content wrap">
+        <p class="eyebrow"><span class="eyebrow__dot"></span>Software development studio</p>
+        <h1 class="hero__title" id="hero-title" data-split="hero">Ideas go in. Software comes out.</h1>
+        <p class="hero__sub">DevForc designs and builds web apps, mobile apps and MVPs for teams that need to ship.</p>
+        <div class="hero__actions">
+          <a class="btn" href="#contact" data-magnetic><span>Start a project</span><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+          <a class="link-arrow" href="#process">See how we build</a>
+        </div>
+      </div>
+
+      <dl class="hero__meta wrap" aria-label="What we make">
+        <div><dt>In</dt><dd>Raw ideas, briefs, napkin sketches</dd></div>
+        <div><dt>Out</dt><dd>Web apps · Mobile apps · MVPs · Custom software</dd></div>
+      </dl>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 02 · THE FORGE — pinned 4-stage process                         -->
+    <!-- ============================================================ -->
+    <section class="forge" id="process" aria-labelledby="forge-title">
+      <div class="forge__pin">
+        <div class="forge__visual" aria-hidden="true">
+          <div class="forge__halo"></div>
+          <canvas class="forge__canvas" id="forge-canvas"></canvas>
+          <!-- Static fallback (reduced motion / no WebGL): one illustration per stage -->
+          <div class="forge__fallback">
+            <svg viewBox="0 0 200 200" data-stage-art="0"><defs><radialGradient id="fg0" cx=".4" cy=".35"><stop offset="0" stop-color="#FFF4DC"/><stop offset=".4" stop-color="#F2A93B"/><stop offset="1" stop-color="#FF6B2C"/></radialGradient></defs><circle cx="100" cy="100" r="64" fill="url(#fg0)"/></svg>
+            <svg viewBox="0 0 200 200" data-stage-art="1"><g fill="none" stroke="#F2A93B" stroke-width="2"><polygon points="100,30 160,65 160,135 100,170 40,135 40,65"/><path d="M100 30v140M40 65l120 70M160 65L40 135M100 100l60-35M100 100L40 65"/></g></svg>
+            <svg viewBox="0 0 200 200" data-stage-art="2"><g fill="none" stroke="#C9A36B" stroke-width="2"><rect x="30" y="40" width="110" height="80" rx="6"/><rect x="60" y="80" width="110" height="80" rx="6" fill="#0A0C10"/><path d="M72 96h60M72 110h40M72 124h70"/></g></svg>
+            <svg viewBox="0 0 200 200" data-stage-art="3"><g fill="none" stroke="#8FA5BC" stroke-width="2"><rect x="62" y="22" width="76" height="156" rx="14"/><rect x="70" y="36" width="60" height="120" rx="4"/><path d="M90 166h20"/></g></svg>
+          </div>
+        </div>
+
+        <div class="forge__copy">
+          <p class="section-label"><span>02</span> The Forge</p>
+          <h2 class="forge__title" id="forge-title" data-split="heat">Four stages. One continuous heat.</h2>
+
+          <ol class="forge__steps">
+            <li class="forge__step is-active" data-step="0">
+              <span class="forge__num">01</span>
+              <div>
+                <h3>Idea <em>— raw ore</em></h3>
+                <p>We pressure-test the idea: who it’s for, what it must do, and the smallest version worth shipping. You leave with a fixed scope and a fixed price.</p>
+              </div>
+            </li>
+            <li class="forge__step" data-step="1">
+              <span class="forge__num">02</span>
+              <div>
+                <h3>Design <em>— the mould</em></h3>
+                <p>Flows, wireframes, then high-fidelity UI you can click through. The shape is set before a line of production code is poured.</p>
+              </div>
+            </li>
+            <li class="forge__step" data-step="2">
+              <span class="forge__num">03</span>
+              <div>
+                <h3>Build <em>— the strike</em></h3>
+                <p>One-week sprints, a working demo every Friday. Tests, CI and code review from the first commit — not bolted on at the end.</p>
+              </div>
+            </li>
+            <li class="forge__step" data-step="3">
+              <span class="forge__num">04</span>
+              <div>
+                <h3>Launch <em>— the quench</em></h3>
+                <p>Web, App Store, Google Play. Monitoring in place, then a clean handover: your repo, your cloud, your keys.</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="forge__readout" aria-hidden="true">
+            <span class="forge__temp"><span data-forge-temp>1538</span><small>°C</small></span>
+            <span class="forge__bar"><span></span></span>
+            <span class="forge__state" data-forge-state>Molten</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- SUNLIT ZONE                                                     -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-sunlit" data-depth-start="40" data-depth-end="200">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--left">
-          <span class="fact-index">01</span>
-          <span class="fact-zone">SUNLIT ZONE</span>
-          <p class="fact-text">Below 200 meters, sunlight can no longer sustain
-            photosynthesis. You are leaving the base of Earth's food chain
-            behind, on purpose.</p>
+    <!-- ============================================================ -->
+    <!-- 03 · SERVICES — objects off the anvil                           -->
+    <!-- ============================================================ -->
+    <section class="services wrap" id="services" aria-labelledby="services-title">
+      <header class="section-head">
+        <p class="section-label"><span>03</span> Services</p>
+        <h2 id="services-title" data-split="heat">What comes off the anvil.</h2>
+      </header>
+
+      <ul class="services__list">
+        <li class="service service--web" data-service="web">
+          <div class="service__object" data-view="service" data-shape="web">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="60" cy="60" r="40"/><ellipse cx="60" cy="60" rx="18" ry="40"/><path d="M20 60h80M26 40h68M26 80h68"/></g></svg>
+          </div>
+          <div class="service__body">
+            <span class="service__num">A</span>
+            <h3>Web development</h3>
+            <p>Product-grade web apps, dashboards and platforms. Fast on a cheap phone, solid under real traffic.</p>
+            <ul class="tags" aria-label="Typical stack"><li>React / Next.js</li><li>Node</li><li>PostgreSQL</li></ul>
+          </div>
+        </li>
+        <li class="service service--mobile" data-service="mobile">
+          <div class="service__object" data-view="service" data-shape="mobile">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="38" y="14" width="44" height="92" rx="9"/><path d="M52 96h16"/></g></svg>
+          </div>
+          <div class="service__body">
+            <span class="service__num">B</span>
+            <h3>Mobile apps</h3>
+            <p>iOS and Android from one codebase, or fully native when the product demands it. Shipped to the stores, not just to TestFlight.</p>
+            <ul class="tags" aria-label="Typical stack"><li>React Native</li><li>Flutter</li><li>Swift / Kotlin</li></ul>
+          </div>
+        </li>
+        <li class="service service--mvp" data-service="mvp">
+          <div class="service__object" data-view="service" data-shape="mvp">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M30 90h60l-8-16H38zM38 70h44l-7-14H45zM46 52h28l-6-12H52z"/></g></svg>
+          </div>
+          <div class="service__body">
+            <span class="service__num">C</span>
+            <h3>MVP development</h3>
+            <p>The first ingot. A real product in real users’ hands in 6–10 weeks — scoped to learn fast, built to keep, not to throw away.</p>
+            <ul class="tags" aria-label="Typical deliverables"><li>Discovery</li><li>Prototype</li><li>Launch</li></ul>
+          </div>
+        </li>
+        <li class="service service--custom" data-service="custom">
+          <div class="service__object" data-view="service" data-shape="custom">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M60 20c22 0 30 18 18 30s-36 6-36 22 22 22 36 10"/><circle cx="60" cy="60" r="40"/></g></svg>
+          </div>
+          <div class="service__body">
+            <span class="service__num">D</span>
+            <h3>Custom software</h3>
+            <p>Internal tools, integrations and systems cut to fit how your business actually works — replacing the spreadsheet that runs everything.</p>
+            <ul class="tags" aria-label="Typical deliverables"><li>Internal tools</li><li>APIs &amp; integrations</li><li>Automation</li></ul>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 04 · SELECTED WORK — horizontal gallery                         -->
+    <!-- Replace images in /public/images/work and the text below.       -->
+    <!-- ============================================================ -->
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div class="work__pin">
+        <header class="work__head wrap">
+          <p class="section-label"><span>04</span> Selected work</p>
+          <h2 id="work-title" data-split="heat">Fresh off the line.</h2>
+          <p class="work__hint" aria-hidden="true">Scroll <span>→</span></p>
+        </header>
+
+        <div class="work__viewport" tabindex="0" role="region" aria-label="Case studies, scrolls horizontally">
+          <ol class="work__track">
+            <li class="case">
+              <a class="case__link" href="#contact">
+                <div class="case__media" data-view="gallery">
+                  <img src="/images/work/ledgerline.webp" srcset="/images/work/ledgerline-800.webp 800w, /images/work/ledgerline.webp 1600w" sizes="(max-width: 768px) 85vw, 52vw" width="1600" height="1100" loading="lazy" decoding="async" alt="Ledgerline dashboard showing a revenue chart, balance card and transaction table" />
+                </div>
+                <div class="case__meta">
+                  <span class="case__num">01</span>
+                  <h3>Ledgerline</h3>
+                  <p>Fintech web app · Design + build</p>
+                  <span class="case__year">2025</span>
+                </div>
+              </a>
+            </li>
+            <li class="case">
+              <a class="case__link" href="#contact">
+                <div class="case__media" data-view="gallery">
+                  <img src="/images/work/tidepool.webp" srcset="/images/work/tidepool-800.webp 800w, /images/work/tidepool.webp 1600w" sizes="(max-width: 768px) 85vw, 52vw" width="1600" height="1100" loading="lazy" decoding="async" alt="Two Tidepool phone screens: a daily activity ring and a list of health entries" />
+                </div>
+                <div class="case__meta">
+                  <span class="case__num">02</span>
+                  <h3>Tidepool</h3>
+                  <p>Mobile health app · iOS + Android</p>
+                  <span class="case__year">2025</span>
+                </div>
+              </a>
+            </li>
+            <li class="case">
+              <a class="case__link" href="#contact">
+                <div class="case__media" data-view="gallery">
+                  <img src="/images/work/fieldkit.webp" srcset="/images/work/fieldkit-800.webp 800w, /images/work/fieldkit.webp 1600w" sizes="(max-width: 768px) 85vw, 52vw" width="1600" height="1100" loading="lazy" decoding="async" alt="Fieldkit route map with three delivery stops and a progress card" />
+                </div>
+                <div class="case__meta">
+                  <span class="case__num">03</span>
+                  <h3>Fieldkit</h3>
+                  <p>Logistics MVP · 8 weeks to launch</p>
+                  <span class="case__year">2024</span>
+                </div>
+              </a>
+            </li>
+            <li class="case">
+              <a class="case__link" href="#contact">
+                <div class="case__media" data-view="gallery">
+                  <img src="/images/work/anvil-ops.webp" srcset="/images/work/anvil-ops-800.webp 800w, /images/work/anvil-ops.webp 1600w" sizes="(max-width: 768px) 85vw, 52vw" width="1600" height="1100" loading="lazy" decoding="async" alt="Anvil Ops kanban board with four columns of work orders" />
+                </div>
+                <div class="case__meta">
+                  <span class="case__num">04</span>
+                  <h3>Anvil Ops</h3>
+                  <p>Custom software · Operations platform</p>
+                  <span class="case__year">2024</span>
+                </div>
+              </a>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- TWILIGHT ZONE                                                   -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-twilight" data-depth-start="200" data-depth-end="1000">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--right">
-          <span class="fact-index">02</span>
-          <span class="fact-zone">TWILIGHT ZONE</span>
-          <p class="fact-text">Ninety percent of the ocean's biomass drifts
-            here, in near-total darkness. More life than anywhere else on
-            Earth — and almost none of it has ever seen the sun.</p>
+    <!-- ============================================================ -->
+    <!-- 05 · WHY DEVFORC                                                -->
+    <!-- ============================================================ -->
+    <section class="why wrap" id="why" aria-labelledby="why-title">
+      <header class="section-head">
+        <p class="section-label"><span>05</span> Why DevForc</p>
+        <h2 id="why-title" class="visually-hidden">Why DevForc</h2>
+      </header>
+      <ol class="why__list">
+        <li class="why__item">
+          <span class="why__num">i.</span>
+          <p class="why__statement"><strong>Fixed-scope pricing.</strong> You get one number before we start. It doesn’t move when the work gets hard — that’s our problem, not yours.</p>
+        </li>
+        <li class="why__item">
+          <span class="why__num">ii.</span>
+          <p class="why__statement"><strong>A working demo every week.</strong> Every Friday you click through what shipped. Real software on a real URL, not a status deck.</p>
+        </li>
+        <li class="why__item">
+          <span class="why__num">iii.</span>
+          <p class="why__statement"><strong>You own the code.</strong> Repo, cloud accounts and credentials sit in your name from day one. No lock-in, no hostage handover.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 06 · TECH STACK MARQUEE                                         -->
+    <!-- ============================================================ -->
+    <section class="stack" aria-labelledby="stack-title">
+      <h2 class="stack__title wrap" id="stack-title"><span class="section-label"><span>06</span> Tools on the bench</span></h2>
+      <div class="marquee" data-marquee>
+        <ul class="marquee__group">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></g><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg>React</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9 8v8M9 8l7 9" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M15 8v5" stroke="currentColor" stroke-width="1.4"/></svg>Next.js</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 11h6M10 11v7M18 11.5c-1-1-3-.8-3 .6 0 1.8 3 1.2 3 3.2 0 1.4-2.2 1.6-3.2.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>TypeScript</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l9 5v10l-9 5-9-5V7z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Node.js</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21l6-6M9 3l12 12-5 5L4 8z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Flutter</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15c4 4 12 5 16-2-3 2-8 2-12-3 3 2 6 3 8 2-3-2-6-5-7-8 2 3 6 6 9 7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Swift</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18L12 12l9 9H3z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Kotlin</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>PostgreSQL</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a5 5 0 01-.5-10 6 6 0 0111.3 1.5A4 4 0 0117 18z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>AWS</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 13h18c1 0 2-1 2-2-2 0-2-2-2-2s-1 1-2 2H2c0 5 4 8 9 8s8-3 9-6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 10h3V7H5zM9 10h3V7H9zM9 6h3V3H9zM13 10h3V7h-3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>Docker</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4 0-4 2-4 3v2h4M12 21c4 0 4-2 4-3v-2h-4M8 8H6c-2 0-3 2-3 4s1 4 3 4h2v-2c0-1 1-2 2-2h4c1 0 2-1 2-2V6M16 16h2c2 0 3-2 3-4s-1-4-3-4h-2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Python</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21L7 3l14 14z M5 12l9 3M10 7l2 9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Three.js</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z M12 2L3.3 17h17.4z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>GraphQL</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L3 20h18z M8 14h8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Vercel</li>
+        </ul>
+        <!-- duplicate group for the seamless loop is added by JS (aria-hidden) -->
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 07 · TESTIMONIALS                                              -->
+    <!-- Placeholder quotes — replace with real, attributable ones.      -->
+    <!-- ============================================================ -->
+    <section class="quotes wrap" id="testimonials" aria-labelledby="quotes-title">
+      <header class="section-head">
+        <p class="section-label"><span>07</span> Word from the floor</p>
+        <h2 id="quotes-title" class="visually-hidden">Testimonials</h2>
+      </header>
+
+      <div class="quotes__stage" aria-live="polite">
+        <figure class="quote is-active" aria-label="Testimonial 1 of 3">
+          <blockquote><p>“They gave us a fixed price, then hit it. We launched in nine weeks and investors clicked through the real app, not a Figma file.”</p></blockquote>
+          <figcaption><strong>Placeholder Name</strong> · Co-founder, fintech startup</figcaption>
+        </figure>
+        <figure class="quote" aria-label="Testimonial 2 of 3" hidden>
+          <blockquote><p>“The Friday demos changed how we work. No surprises — just a new build every week we could put in front of customers.”</p></blockquote>
+          <figcaption><strong>Placeholder Name</strong> · Head of Product, health-tech company</figcaption>
+        </figure>
+        <figure class="quote" aria-label="Testimonial 3 of 3" hidden>
+          <blockquote><p>“We own every line and every key. When we hired in-house, handover took an afternoon.”</p></blockquote>
+          <figcaption><strong>Placeholder Name</strong> · COO, logistics business</figcaption>
+        </figure>
+      </div>
+
+      <div class="quotes__controls">
+        <button class="icon-btn" type="button" data-quote="prev" aria-label="Previous testimonial" data-magnetic>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+        </button>
+        <p class="quotes__count" aria-hidden="true"><span data-quote-index>01</span> / 03</p>
+        <button class="icon-btn" type="button" data-quote="next" aria-label="Next testimonial" data-magnetic>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 08 · CONTACT                                                    -->
+    <!-- ============================================================ -->
+    <section class="contact wrap" id="contact" aria-labelledby="contact-title">
+      <div class="contact__intro">
+        <p class="section-label"><span>08</span> Contact</p>
+        <h2 id="contact-title" data-split="heat">Put something in the fire.</h2>
+        <p>Tell us what you’re building. You’ll get a reply within one working day — and a fixed-scope proposal within a week.</p>
+        <a class="btn btn--ghost" href="https://cal.com/devforc/intro" target="_blank" rel="noopener" data-magnetic data-booking>
+          <span>Book a call</span>
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M4 10h16M9 3v4M15 3v4" /></svg>
+        </a>
+        <p class="contact__mail">Or write to <a href="mailto:hello@devforc.com">hello@devforc.com</a></p>
+      </div>
+
+      <!-- Netlify picks this form up automatically (data-netlify). For other hosts see README → "Contact form". -->
+      <form class="form" name="contact" method="POST" data-netlify="true" netlify-honeypot="company-website" novalidate>
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="visually-hidden"><label>Leave this empty: <input name="company-website" tabindex="-1" autocomplete="off" /></label></p>
+
+        <div class="form__row">
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err" />
+            <p class="field__error" id="f-name-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="f-email-err" />
+            <p class="field__error" id="f-email-err" aria-live="polite"></p>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================= -->
-    <!-- MIDNIGHT ZONE                                                   -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-midnight" data-depth-start="1000" data-depth-end="3000">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--left">
-          <span class="fact-index">03</span>
-          <span class="fact-zone">MIDNIGHT ZONE</span>
-          <p class="fact-text">No sunlight has touched this water in millions
-            of years. Every spark you see out there is a living thing making
-            its own light — the only light for miles.</p>
+        <fieldset class="field field--chips">
+          <legend>Project type</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="project_type" value="Web app" required /><span>Web app</span></label>
+            <label class="chip"><input type="radio" name="project_type" value="Mobile app" /><span>Mobile app</span></label>
+            <label class="chip"><input type="radio" name="project_type" value="MVP" /><span>MVP</span></label>
+            <label class="chip"><input type="radio" name="project_type" value="Custom software" /><span>Custom software</span></label>
+            <label class="chip"><input type="radio" name="project_type" value="Not sure yet" /><span>Not sure yet</span></label>
+          </div>
+          <p class="field__error" id="f-type-err" aria-live="polite"></p>
+        </fieldset>
+
+        <fieldset class="field field--chips">
+          <legend>Budget range</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="budget" value="Under $15k" required /><span>Under $15k</span></label>
+            <label class="chip"><input type="radio" name="budget" value="$15k–$40k" /><span>$15k–$40k</span></label>
+            <label class="chip"><input type="radio" name="budget" value="$40k–$100k" /><span>$40k–$100k</span></label>
+            <label class="chip"><input type="radio" name="budget" value="$100k+" /><span>$100k+</span></label>
+          </div>
+          <p class="field__error" id="f-budget-err" aria-live="polite"></p>
+        </fieldset>
+
+        <div class="field">
+          <label for="f-message">Message</label>
+          <textarea id="f-message" name="message" rows="5" required aria-describedby="f-message-err" placeholder="What are you building, and when does it need to ship?"></textarea>
+          <p class="field__error" id="f-message-err" aria-live="polite"></p>
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================= -->
-    <!-- THE FLOOR                                                       -->
-    <!-- ============================================================= -->
-    <section class="zone-section" id="section-floor" data-depth-start="3000" data-depth-end="3800">
-      <div class="pin">
-        <div class="reveal fact-card fact-card--right">
-          <span class="fact-index">04</span>
-          <span class="fact-zone">THE FLOOR</span>
-          <p class="fact-text">Hydrothermal vents here scald at 400°C —
-            yet the water around them never boils. At this pressure, three
-            hundred and eighty atmospheres, it simply can't.</p>
+        <div class="form__submit">
+          <button class="btn" type="submit" data-magnetic><span>Send it to the forge</span><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
+          <p class="form__status" role="status" aria-live="polite"></p>
         </div>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- EREBUS SPEC CALLOUTS                                            -->
-    <!-- ============================================================= -->
-    <section class="content-section" id="specs">
-      <div class="reveal specs-block">
-        <p class="eyebrow">THE VESSEL</p>
-        <h2>EREBUS</h2>
-        <div class="specs-grid">
-          <div class="spec"><span class="spec-value">14.2 M</span><span class="spec-label">Length</span></div>
-          <div class="spec"><span class="spec-value">8 + 2</span><span class="spec-label">Civilians · Pilots</span></div>
-          <div class="spec"><span class="spec-value">4,000 M</span><span class="spec-label">Max depth rating</span></div>
-          <div class="spec"><span class="spec-value">Ti-C</span><span class="spec-label">Composite hull</span></div>
-          <div class="spec"><span class="spec-value">~90 MIN</span><span class="spec-label">Descent time</span></div>
-          <div class="spec"><span class="spec-value">96 HRS</span><span class="spec-label">Life support reserve</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- PRICING                                                         -->
-    <!-- ============================================================= -->
-    <section class="content-section" id="pricing">
-      <div class="reveal pricing-block">
-        <p class="pricing-line">
-          <span class="pricing-em">8 seats.</span>
-          <span class="pricing-em">$250,000.</span>
-          <span class="pricing-em">Departing March 2027.</span>
-        </p>
-        <p class="pricing-note">Full expedition: training, descent, four hours
-          on the floor, ascent. Berths are allocated by application, not
-          purchase order.</p>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- CTA / MANIFEST                                                  -->
-    <!-- ============================================================= -->
-    <section class="content-section" id="manifest">
-      <div class="reveal manifest-block">
-        <p class="eyebrow">DIVE 119 · MARCH 2027</p>
-        <h2>Join the Manifest</h2>
-        <p class="manifest-sub">Eight names. One descent. Tell us where to
-          reach you when the manifest opens.</p>
-        <form id="manifest-form" class="manifest-form">
-          <input id="manifest-email" type="email" required placeholder="you@domain.com" aria-label="Email address" />
-          <button type="submit">REQUEST BERTH</button>
-        </form>
-        <p id="manifest-status" class="manifest-status"></p>
-      </div>
-
-      <footer class="site-footer">
-        <span>ABYSSAL EXPEDITIONS</span>
-        <span>EREBUS-CLASS SUBMERSIBLE</span>
-        <span>© 2027</span>
-      </footer>
+      </form>
     </section>
   </main>
 
-  <script type="module" src="/src/main.js"></script>
+  <!-- ============================================================ -->
+  <!-- FOOTER — the ember cools to nothing                            -->
+  <!-- ============================================================ -->
+  <footer class="footer" aria-labelledby="footer-title">
+    <div class="footer__ember" aria-hidden="true"><span></span></div>
+    <div class="wrap footer__inner">
+      <p class="footer__title" id="footer-title">Cooled. Shipped.</p>
+      <nav class="footer__nav" aria-label="Footer">
+        <a href="#process">Process</a>
+        <a href="#services">Services</a>
+        <a href="#work">Work</a>
+        <a href="#contact">Contact</a>
+        <a href="https://www.linkedin.com/company/devforc" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/devforc" rel="noopener">GitHub</a>
+      </nav>
+      <p class="footer__legal">© <span data-year>2026</span> DevForc · devforc.com</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/js/main.js"></script>
 </body>
 </html>
